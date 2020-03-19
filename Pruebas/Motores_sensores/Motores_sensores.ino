@@ -1,5 +1,17 @@
-/*
-*/
+
+#include <infrarrojo.h>
+infrarrojo estado_1(41); // sensor de arranque
+infrarrojo estado_2(42); //sensor de paro para medir peso
+
+int VALOR_1; // Recibe dato de sensor de arranque
+int VALOR_2;  //Recibe SEÑAL de paro para medir peso
+//infrarrojo estado_3(41);
+
+int led_estado_1; // Variable de estado de sensor de arranque
+int led_estado_2;  // Variable de estado de sensor de paro
+
+
+
 
 //Pin de lectura del pesaje
 int pinpesado=A1;
@@ -47,6 +59,13 @@ const int pinfcfcinta3=35;
 
 
 void setup() {
+
+
+  Serial.begin(9600); //VELOCIDAD COMUNICACION SERIAL
+
+
+
+  
   pinMode(pinvelocidad, OUTPUT);  
 //Pines de control de cintas como salidas
   pinMode(pinmotorcinta0, OUTPUT);
@@ -120,21 +139,27 @@ Peso = analogRead(pinpesado);
 //estadofcicinta3 = digitalRead(pinfcicinta3);
 //Desde aca si arranca la programacion
 
-extraercilindroc();
-delay(2000);
-apagarcilindroc();
-delay(1000);
-retraercilindroc();
-delay(2000);
-apagarcilindroc();
-delay(1000);
+led_estado_1 = estado_1.lectura(VALOR_1);//LED QUE RECOGE EL ESTADO DEL SENSOR
+if(led_estado_1 == 1)//ETAPA DE COMPARACION PARA ACTIVAR UN LED SEGUN EL ESTADO DEL SENSOR
+{
+  extraercilindroc();
 
+}
+else
+{
+  apagarcilindroc();
 
+}
 
-
-
-
- 
+//  extraercilindroc();
+ // delay(2000);
+  //apagarcilindroc();
+  //delay(1000);
+  //retraercilindroc();
+  //delay(2000);
+  //apagarcilindroc();
+  //delay(1000);
+  
 }
 
 

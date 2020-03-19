@@ -31,11 +31,11 @@ void setup() {
 
 
 void loop() {
-   digitalWrite(PIN_MOTOR_1_EN, 10);
+   analogWrite(PIN_MOTOR_1_EN, 70);
   //MOTOR_1_FORWARD;
   MOTOR_1_FORWARD;
-  delay(2000);
+  delay(10000);
   //MOTOR_1_BACKWARD;
   MOTOR_1_BACKWARD;
-  delay(2000);
+  delay(5000);
 }
