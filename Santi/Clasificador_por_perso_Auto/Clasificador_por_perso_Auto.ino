@@ -87,7 +87,7 @@ void setup() {
   
   pinMode(pinfcicinta3, INPUT);  
   pinMode(pinfcfcinta3, INPUT); 
-//analogWrite(pinvelocidad,70);
+analogWrite(pinvelocidad,0);
 }
 
 void loop() {
