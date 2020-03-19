@@ -87,14 +87,14 @@ void setup() {
   
   pinMode(pinfcicinta3, INPUT);  
   pinMode(pinfcfcinta3, INPUT); 
-  digitalWrite(pinvelocidad,0);
+ // digitalWrite(pinvelocidad,0);
 }
 
 void loop() {
 //Leemos el pin de pesaje  
 Peso = analogRead(pinpesado);
 //Definimos la velocidad
-//analogWrite(pinvelocidad,70);
+digitalWrite(pinvelocidad,70);
 
 
 //Leemos el estado de los finales de carrera de los cilindros
@@ -166,17 +166,17 @@ digitalWrite(pin1motorcilindrob,LOW);
 digitalWrite(pin2motorcilindrob,LOW);}
 
 void extraercilindroc(){
-digitalWrite(pinvelocidad,70);  
+//digitalWrite(pinvelocidad,70);  
 digitalWrite(pin1motorcilindroc,HIGH); 
 digitalWrite(pin2motorcilindroc,LOW);}
 
 void retraercilindroc(){
-digitalWrite(pinvelocidad,70);  
+//digitalWrite(pinvelocidad,70);  
 digitalWrite(pin1motorcilindroc,LOW); 
 digitalWrite(pin2motorcilindroc,HIGH);}
 
 void apagarcilindroc(){
-digitalWrite(pinvelocidad,0);  
+//digitalWrite(pinvelocidad,0);  
 digitalWrite(pin1motorcilindroa,LOW); 
 digitalWrite(pin2motorcilindroa,LOW);}
 
