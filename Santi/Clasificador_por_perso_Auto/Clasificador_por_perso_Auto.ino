@@ -4,7 +4,7 @@
 
 //Pin de lectura del pesaje
 int pinpesado=A1;
-
+int Peso;
 //Pines de control de las cintas transportadoras
 const int pinmotorcinta0=2;
 const int pinmotorcinta1=3;
@@ -20,6 +20,8 @@ const int pin2motorcilindrob=9;
 
 const int pin1motorcilindroc=10;
 const int pin2motorcilindroc=11;
+//pin de velocidad de los pwm
+const int pinvelocidad=12;
 
 //Pines de lectura de finales de carrera de cilindros
 const int pinfcicilindroa=22;
@@ -46,7 +48,7 @@ const int pinfcfcinta3=35;
 
 
 void setup() {
-  
+  pinMode(pinvelocidad, OUTPUT);  
 //Pines de control de cintas como salidas
   pinMode(pinmotorcinta0, OUTPUT);
   pinMode(pinmotorcinta1, OUTPUT);
@@ -91,29 +93,45 @@ void setup() {
 void loop() {
 //Leemos el pin de pesaje  
 Peso = analogRead(pinpesado);
+//Definimos la velocidad
+analogWrite(pinvelocidad,70);
+
 
 //Leemos el estado de los finales de carrera de los cilindros
-estadofcicilindroa = digitalRead(pinfcicilindroa);
-estadofcicilindroa = digitalRead(pinfcfcilindroa);
+//estadofcicilindroa = digitalRead(pinfcicilindroa);
+//estadofcicilindroa = digitalRead(pinfcfcilindroa);
 
-estadofcicilindrob = digitalRead(pinfcicilindrob);
-estadofcicilindrob = digitalRead(pinfcfcilindrob);
+//estadofcicilindrob = digitalRead(pinfcicilindrob);
+//estadofcicilindrob = digitalRead(pinfcfcilindrob);
 
-estadofcicilindroc = digitalRead(pinfcicilindroc);
-estadofcicilindroc = digitalRead(pinfcfcilindroc);
+//estadofcicilindroc = digitalRead(pinfcicilindroc);
+//estadofcicilindroc = digitalRead(pinfcfcilindroc);
 
 //Leemos el estado de los finales de carrera de las cintas transportadoras
-estadofcicinta0 = digitalRead(pinfcicinta0);
-estadofcicinta0 = digitalRead(pinfcicinta0);
+//estadofcicinta0 = digitalRead(pinfcicinta0);
+//estadofcicinta0 = digitalRead(pinfcicinta0);
 
-estadofcicinta1 = digitalRead(pinfcicinta1);
-estadofcicinta1 = digitalRead(pinfcicinta1);
+//estadofcicinta1 = digitalRead(pinfcicinta1);
+//estadofcicinta1 = digitalRead(pinfcicinta1);
 
-estadofcicinta2 = digitalRead(pinfcicinta2);
-estadofcicinta2 = digitalRead(pinfcicinta2);
+//estadofcicinta2 = digitalRead(pinfcicinta2);
+//estadofcicinta2 = digitalRead(pinfcicinta2);
 
-estadofcicinta3 = digitalRead(pinfcicinta3);
-estadofcicinta3 = digitalRead(pinfcicinta3);
+//estadofcicinta3 = digitalRead(pinfcicinta3);
+//estadofcicinta3 = digitalRead(pinfcicinta3);
+//Desde aca si arranca la programacion
+
+extraercilindroc();
+delay(2000);
+apagarcilindroc();
+delay(200);
+retraercilindroc();
+delay(2000);
+apagarcilindroc();
+delay(200);
+
+
+
 
 
 
@@ -183,25 +201,3 @@ digitalWrite(pinmotorcinta3,HIGH);}
 
 void apagarcinta3(){
 digitalWrite(pinmotorcinta3,LOW);} 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
