@@ -87,7 +87,7 @@ void setup() {
   
   pinMode(pinfcicinta3, INPUT);  
   pinMode(pinfcfcinta3, INPUT); 
-  analogWrite(pinvelocidad,0);
+  digitalWrite(pinvelocidad,0);
 }
 
 void loop() {
@@ -166,17 +166,17 @@ digitalWrite(pin1motorcilindrob,LOW);
 digitalWrite(pin2motorcilindrob,LOW);}
 
 void extraercilindroc(){
-analogWrite(pinvelocidad,70);  
+digitalWrite(pinvelocidad,70);  
 digitalWrite(pin1motorcilindroc,HIGH); 
 digitalWrite(pin2motorcilindroc,LOW);}
 
 void retraercilindroc(){
-analogWrite(pinvelocidad,70);  
+digitalWrite(pinvelocidad,70);  
 digitalWrite(pin1motorcilindroc,LOW); 
 digitalWrite(pin2motorcilindroc,HIGH);}
 
 void apagarcilindroc(){
-analogWrite(pinvelocidad,0);  
+digitalWrite(pinvelocidad,0);  
 digitalWrite(pin1motorcilindroa,LOW); 
 digitalWrite(pin2motorcilindroa,LOW);}
 
