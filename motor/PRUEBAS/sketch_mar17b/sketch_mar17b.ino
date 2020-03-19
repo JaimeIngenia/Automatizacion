@@ -19,7 +19,7 @@ void setup() {
   pinMode(PIN_MOTOR_1_EN, OUTPUT);
   pinMode(PIN_MOTOR_1_N1, OUTPUT);
   pinMode(PIN_MOTOR_1_N2, OUTPUT);
-  digitalWrite(PIN_MOTOR_1_EN, 10);
+
   
 //  pinMode(PIN_MOTOR_2_EN, OUTPUT);
 //  pinMode(PIN_MOTOR_2_N3, OUTPUT);
@@ -31,7 +31,7 @@ void setup() {
 
 
 void loop() {
- 
+   digitalWrite(PIN_MOTOR_1_EN, 10);
   //MOTOR_1_FORWARD;
   MOTOR_1_FORWARD;
   delay(2000);
