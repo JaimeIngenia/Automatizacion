@@ -124,11 +124,11 @@ Peso = analogRead(pinpesado);
 extraercilindroc();
 delay(2000);
 apagarcilindroc();
-delay(200);
+delay(1000);
 retraercilindroc();
 delay(2000);
 apagarcilindroc();
-delay(200);
+delay(1000);
 
 
 
