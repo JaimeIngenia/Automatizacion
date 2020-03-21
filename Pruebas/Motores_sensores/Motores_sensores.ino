@@ -1,198 +1,143 @@
+#include <HX711_ADC.h>                   //BALANZA
+HX711_ADC LoadCell(6, 7);                //BLANZA
 
-#include <infrarrojo.h>
-infrarrojo estado_1(41); // sensor de arranque
-infrarrojo estado_2(42); //sensor de paro para medir peso
+#include <Servo.h>                       //SERVOS CILINDROS A & B
+Servo myservo;                           //SEVO_1                         
 
-int VALOR_1; // Recibe dato de sensor de arranque
-int VALOR_2;  //Recibe SEÑAL de paro para medir peso
-//infrarrojo estado_3(41);
+#include <Wire.h>                        //PANTALLA
+#include <LiquidCrystal_I2C.h>           //PANTALLA 
+LiquidCrystal_I2C lcd(0x27, 16, 2);      //PANTALLA
 
-int led_estado_1; // Variable de estado de sensor de arranque
-int led_estado_2;  // Variable de estado de sensor de paro
+#include <infrarrojo.h>                  //SENSORES DE PRESENCIA      
+infrarrojo estado_1(41);                 //S1 (sensor de arranque banda 1)
+infrarrojo estado_2(42);                 //S2 (sensor de paro para medir peso)
+infrarrojo estado_3(40);                 //S3 (sensor inferior de asensor)
 
-
-
-
-//Pin de lectura del pesaje
-int pinpesado=A1;
-int Peso;
 //Pines de control de las cintas transportadoras
-const int pinmotorcinta0=2;
-const int pinmotorcinta1=3;
-const int pinmotorcinta2=4;
-const int pinmotorcinta3=5;
+const int pin1motorcinta1=22;           //MOTOR 1
+const int pin2motorcinta1=23;           //MOTOR 1
+
+const int pin1motorcinta2=24;           //MOTOR 2
+const int pin2motorcinta2=25;           //MOTOR 2
+
+const int pin1motorcinta3=26;           //MOTOR 3
+const int pin2motorcinta3=27;           //MOTOR 3 
 
 //Pines de control de cilindros
-const int pin1motorcilindroa=6;
-const int pin2motorcilindroa=7;
+const int pin1motorcilindroc=10;        //MOTOR 4
+const int pin2motorcilindroc=11;        //MOTOR 4
 
-const int pin1motorcilindrob=8;
-const int pin2motorcilindrob=9;
-
-const int pin1motorcilindroc=10;
-const int pin2motorcilindroc=11;
+const int pin1motorcilindroa1=28;
+const int pin2motorcilindroa1=29;
 //pin de velocidad de los pwm
 const int pinvelocidad=12;
 
-//Pines de lectura de finales de carrera de cilindros
-const int pinfcicilindroa=22;
-const int pinfcfcilindroa=23;
+//Pines de lectura de finales de carrera
+int VALOR_1;                             //Recibe dato S1
+int VALOR_2;                             //Recibe dato S2
+int VALOR_3;                             //Recibe dato S3
 
-const int pinfcicilindrob=24;
-const int pinfcfcilindrob=25;
-
-const int pinfcicilindroc=26;
-const int pinfcfcilindroc=27;
-
-//Pines de lectura de finales de carrera de las cintas transportadoras
-const int pinfcicinta0=28;
-const int pinfcfcinta0=29;
-
-const int pinfcicinta1=30;
-const int pinfcfcinta1=31;
-
-const int pinfcicinta2=32;
-const int pinfcfcinta2=33;
-
-const int pinfcicinta3=34;
-const int pinfcfcinta3=35;
-
+int led_estado_1;                        // Variable de estado de sensor de arranque
+int led_estado_2;                        // Variable de estado de sensor de paro
+int led_estado_3;                        // Variable de estado inferior de sensor de asensor
 
 void setup() {
 
-
-  Serial.begin(9600); //VELOCIDAD COMUNICACION SERIAL
-
-
-
+  LoadCell.begin();                     //BALANZA
+  LoadCell.start(2000);                 //BALANZA
+  LoadCell.setCalFactor(340.0);         //BALANZA
   
-  pinMode(pinvelocidad, OUTPUT);  
+  myservo.attach(9);                    //SERVOS 
+  Serial.begin(9600);                   //SERVOS
+
+  lcd.begin();                          //PANTALLA LCD
+  lcd.backlight();                      //PANTALLA LCD
+  
+  pinMode(pinvelocidad, OUTPUT);        //MOTORES
 //Pines de control de cintas como salidas
-  pinMode(pinmotorcinta0, OUTPUT);
-  pinMode(pinmotorcinta1, OUTPUT);
-  pinMode(pinmotorcinta2, OUTPUT); 
-  pinMode(pinmotorcinta3, OUTPUT);
+  pinMode(pin1motorcinta1, OUTPUT);     //MOTOR 1
+  pinMode(pin2motorcinta1, OUTPUT);     //MOTOR 1
+
+  pinMode(pin1motorcinta2, OUTPUT);     //MOTOR 2
+  pinMode(pin2motorcinta2, OUTPUT);     //MOTOR 2
+
+  pinMode(pin1motorcinta3, OUTPUT);     //MOTOR 3
+  pinMode(pin2motorcinta3, OUTPUT);     //MOTOR 3
+
   
 //Pines de motores de cilindros como salidas
-  pinMode(pin1motorcilindroa, OUTPUT);  
-  pinMode(pin2motorcilindroa, OUTPUT); 
-  
-  pinMode(pin1motorcilindrob, OUTPUT);  
-  pinMode(pin2motorcilindrob, OUTPUT);
 
-  pinMode(pin1motorcilindroc, OUTPUT);  
-  pinMode(pin2motorcilindroc, OUTPUT);
+  pinMode(pin1motorcilindroc, OUTPUT); //MOTOR 4
+  pinMode(pin2motorcilindroc, OUTPUT); //MOTOR 4
   
-//Pines de finales de carrera de cilindros como entradas  
-  pinMode(pinfcicilindroa, INPUT);  
-  pinMode(pinfcfcilindroa, INPUT);
-  
-  pinMode(pinfcicilindrob, INPUT);  
-  pinMode(pinfcfcilindrob, INPUT);
-  
-  pinMode(pinfcicilindroc, INPUT);  
-  pinMode(pinfcfcilindroc, INPUT);
-  
-//Pines de finales de carrera de cintas transportadoras como entradas  
-  pinMode(pinfcicinta0, INPUT);  
-  pinMode(pinfcfcinta0, INPUT);
-  
-  pinMode(pinfcicinta1, INPUT);  
-  pinMode(pinfcfcinta1, INPUT);  
-  
-  pinMode(pinfcicinta2, INPUT);  
-  pinMode(pinfcfcinta2, INPUT);  
-  
-  pinMode(pinfcicinta3, INPUT);  
-  pinMode(pinfcfcinta3, INPUT); 
   digitalWrite(pinvelocidad,0);
 }
 
 void loop() {
-//Leemos el pin de pesaje  
-Peso = analogRead(pinpesado);
-//Definimos la velocidad
-//digitalWrite(pinvelocidad,70);
 
-
-//Leemos el estado de los finales de carrera de los cilindros
-//estadofcicilindroa = digitalRead(pinfcicilindroa);
-//estadofcicilindroa = digitalRead(pinfcfcilindroa);
-
-//estadofcicilindrob = digitalRead(pinfcicilindrob);
-//estadofcicilindrob = digitalRead(pinfcfcilindrob);
-
-//estadofcicilindroc = digitalRead(pinfcicilindroc);
-//estadofcicilindroc = digitalRead(pinfcfcilindroc);
-
-//Leemos el estado de los finales de carrera de las cintas transportadoras
-//estadofcicinta0 = digitalRead(pinfcicinta0);
-//estadofcicinta0 = digitalRead(pinfcicinta0);
-
-//estadofcicinta1 = digitalRead(pinfcicinta1);
-//estadofcicinta1 = digitalRead(pinfcicinta1);
-
-//estadofcicinta2 = digitalRead(pinfcicinta2);
-//estadofcicinta2 = digitalRead(pinfcicinta2);
-
-//estadofcicinta3 = digitalRead(pinfcicinta3);
-//estadofcicinta3 = digitalRead(pinfcicinta3);
-//Desde aca si arranca la programacion
 
 led_estado_1 = estado_1.lectura(VALOR_1);//LED QUE RECOGE EL ESTADO DEL SENSOR
-if(led_estado_1 == 1)//ETAPA DE COMPARACION PARA ACTIVAR UN LED SEGUN EL ESTADO DEL SENSOR
+led_estado_2 = estado_2.lectura(VALOR_2);//LED QUE RECOGE EL ESTADO DEL SENSOR
+led_estado_3 = estado_3.lectura(VALOR_3);//LED QUE RECOGE EL ESTADO DEL SENSOR
+//Serial.print(led_estado_1);
+//Serial.print("  ");
+//Serial.print(led_estado_2);
+//Serial.print("  ");
+//Serial.println(led_estado_3);
+
+if(led_estado_1 == 0)
 {
   extraercilindroc();
-
 }
-else
+if(led_estado_2 == 0)
 {
   apagarcilindroc();
-
+  pesarcarga();
 }
 
-//  extraercilindroc();
- // delay(2000);
-  //apagarcilindroc();
-  //delay(1000);
-  //retraercilindroc();
-  //delay(2000);
-  //apagarcilindroc();
-  //delay(1000);
+if(led_estado_3 == 0)
+{
+  extraercilindroa();
+}
+
   
 }
+//FUNCIÓN PESAR 
+void pesarcarga(){
+  LoadCell.update(); // retrieves data from the load cell
+  float i = LoadCell.getData(); // get output value
+  lcd.setCursor(0, 0); // set cursor to first row
+  lcd.print("Weight[g]:"); // print out to LCD
+  lcd.setCursor(0, 1); // set cursor to secon row
+  lcd.print(i); // print out the retrieved value to the second row
+  }
 
-
-
-//Funciones de control de los cilindros
+//Funciones cilindros A Y B CON LOS DOS SERVOS
 void extraercilindroa(){
-digitalWrite(pin1motorcilindroa,HIGH); 
-digitalWrite(pin2motorcilindroa,LOW);}
+myservo.write(180);              // 180 tells the continuous rotation servo (CRS) to move forward  
+delay(800);                       // waits X ms for the servo to reach the desired position
+myservo.write(90);              // 90 tells the CRS to stop (use potentiometer on servo to tune to full stop if there is jitter)
+delay(500);                     // Arbitrary wait time before moving actuator backward
+myservo.write(0);              // 0 tells the continuous rotation servo (CRS) to move backward
+delay(800);                       // waits X ms for the servo to reach the original position
+myservo.write(90);
+lcd.setCursor(0,0);
+lcd.print("    CILIINDRO A    " );
+lcd.setCursor(0,1);
+lcd.print("    ACCIONADO   ");}
 
-void retraercilindroa(){
-digitalWrite(pin1motorcilindroa,LOW); 
-digitalWrite(pin2motorcilindroa,HIGH);}
+// cilindro b .. falta programar
 
-void apagarcilindroa(){
-digitalWrite(pin1motorcilindroa,LOW); 
-digitalWrite(pin2motorcilindroa,LOW);}
-
-void extraercilindrob(){
-digitalWrite(pin1motorcilindrob,HIGH); 
-digitalWrite(pin2motorcilindrob,LOW);}
-
-void retraercilindrob(){
-digitalWrite(pin1motorcilindrob,LOW); 
-digitalWrite(pin2motorcilindrob,HIGH);}
-
-void apagarcilindrob(){
-digitalWrite(pin1motorcilindrob,LOW); 
-digitalWrite(pin2motorcilindrob,LOW);}
+//cilindro c
 
 void extraercilindroc(){
 digitalWrite(pinvelocidad,70);  
 digitalWrite(pin1motorcilindroc,HIGH); 
-digitalWrite(pin2motorcilindroc,LOW);}
+digitalWrite(pin2motorcilindroc,LOW);
+lcd.setCursor(0,0);
+lcd.print("    MOTOR 1    " );
+lcd.setCursor(0,1);
+lcd.print("    ENCENDIDO   ");}
 
 void retraercilindroc(){
 digitalWrite(pinvelocidad,70);  
@@ -201,30 +146,47 @@ digitalWrite(pin2motorcilindroc,HIGH);}
 
 void apagarcilindroc(){
 digitalWrite(pinvelocidad,0);  
-digitalWrite(pin1motorcilindroa,LOW); 
-digitalWrite(pin2motorcilindroa,LOW);}
-
+digitalWrite(pin1motorcilindroa1,LOW); 
+digitalWrite(pin2motorcilindroa1,LOW);
+}
+ 
 //Funciones de control de las cintas transportadoras
-void encendercinta0(){
-digitalWrite(pinmotorcinta0,HIGH);} 
 
-void apagarcinta0(){
-digitalWrite(pinmotorcinta0,LOW);} 
+void arrancarbanda1(){
+digitalWrite(pinvelocidad,0);  
+digitalWrite(pin1motorcinta1,LOW); 
+digitalWrite(pin2motorcinta1,HIGH);
+}
+void apagarbanda1(){
+digitalWrite(pinvelocidad,0);  
+digitalWrite(pin1motorcilindroa1,LOW); 
+digitalWrite(pin2motorcilindroa1,LOW);
+}
 
-void encendercinta1(){
-digitalWrite(pinmotorcinta1,HIGH);} 
+void arrancarbanda2(){
+digitalWrite(pinvelocidad,0);  
+digitalWrite(pin1motorcinta2,LOW); 
+digitalWrite(pin2motorcinta2,HIGH);
+}
+void apagarbanda2(){
+digitalWrite(pinvelocidad,0);  
+digitalWrite(pin1motorcilindroa1,LOW); 
+digitalWrite(pin2motorcilindroa1,LOW);
+}
 
-void apagarcinta1(){
-digitalWrite(pinmotorcinta1,LOW);} 
+void arrancarbanda3(){
+digitalWrite(pinvelocidad,0);  
+digitalWrite(pin1motorcinta3,LOW); 
+digitalWrite(pin2motorcinta3,HIGH);
+}
+void apagarbanda3(){
+digitalWrite(pinvelocidad,0);  
+digitalWrite(pin1motorcilindroa1,LOW); 
+digitalWrite(pin2motorcilindroa1,LOW);
+}
 
-void encendercinta2(){
-digitalWrite(pinmotorcinta2,HIGH);} 
 
-void apagarcinta2(){
-digitalWrite(pinmotorcinta2,LOW);} 
-
-void encendercinta3(){
-digitalWrite(pinmotorcinta3,HIGH);} 
-
-void apagarcinta3(){
-digitalWrite(pinmotorcinta3,LOW);} 
+//FUINCIÓN APAGAR SANTI 
+void apagarcilindroa(){
+digitalWrite(pin1motorcilindroa1,LOW); 
+digitalWrite(pin2motorcilindroa1,LOW);}
