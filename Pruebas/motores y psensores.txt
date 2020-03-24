@@ -2,8 +2,7 @@
 HX711_ADC LoadCell(6, 7);                //BLANZA
 
 #include <Servo.h>                       //SERVOS CILINDROS A & B
-Servo myservo;                          //SEVO_1 
-Servo myservo2;                         //SEVO_2                         
+Servo myservo;                           //SEVO_1                         
 
 #include <Wire.h>                        //PANTALLA
 #include <LiquidCrystal_I2C.h>           //PANTALLA 
@@ -48,8 +47,7 @@ void setup() {
   LoadCell.start(2000);                 //BALANZA
   LoadCell.setCalFactor(340.0);         //BALANZA
   
-  myservo.attach(36);                   //SERVOS 1 
-  myservo2.attach(34);                  //SERVOS 2 
+  myservo.attach(9);                    //SERVOS 
   Serial.begin(9600);                   //SERVOS
 
   lcd.begin();                          //PANTALLA LCD
@@ -104,7 +102,6 @@ if(led_estado_2 == 1)
 if(led_estado_3 == 0)
 {
   extraercilindroa();
-  extraercilindrob();
 }
 
   
@@ -120,13 +117,12 @@ void pesarcarga(){
   }
 
 //Funciones cilindros A Y B CON LOS DOS SERVOS
-//360
 void extraercilindroa(){
 myservo.write(180);              // 180 tells the continuous rotation servo (CRS) to move forward  
 delay(800);                       // waits X ms for the servo to reach the desired position
 myservo.write(90);              // 90 tells the CRS to stop (use potentiometer on servo to tune to full stop if there is jitter)
 delay(500);                     // Arbitrary wait time before moving actuator backward
-myservo.write(5);              // 0 tells the continuous rotation servo (CRS) to move backward
+myservo.write(0);              // 0 tells the continuous rotation servo (CRS) to move backward
 delay(800);                       // waits X ms for the servo to reach the original position
 myservo.write(90);
 lcd.setCursor(0,0);
@@ -134,16 +130,8 @@ lcd.print("    CILIINDRO A    " );
 lcd.setCursor(0,1);
 lcd.print("    ACCIONADO   ");}
 
-// cilindro b 180
-void extraercilindrob(){
-myservo2.write(180);              // 180 tells the continuous rotation servo (CRS) to move forward  
-delay(800);                       // waits X ms for the servo to reach the desired position
-myservo2.write(180);              // 90 tells the CRS to stop (use potentiometer on servo to tune to full stop if there is jitter)
-delay(500);                     // Arbitrary wait time before moving actuator backward
-myservo2.write(5);              // 0 tells the continuous rotation servo (CRS) to move backward
-delay(800);                       // waits X ms for the servo to reach the original position
-myservo2.write(180);
-}
+// cilindro b .. falta programar
+
 //cilindro c
 
 void extraercilindroc(){
