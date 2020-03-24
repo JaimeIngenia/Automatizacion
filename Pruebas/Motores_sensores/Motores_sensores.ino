@@ -87,11 +87,15 @@ led_estado_3 = estado_3.lectura(VALOR_3);//LED QUE RECOGE EL ESTADO DEL SENSOR
 
 if(led_estado_1 == 0)
 {
-  extraercilindroc();
+  arrancarbanda1();
+  lcd.setCursor(0,0);
+  lcd.print("     MOTOR 1    " );
+  lcd.setCursor(0,1);
+  lcd.print("    ENCENDIDO   ");
 }
-if(led_estado_2 == 0)
+if(led_estado_2 == 1)
 {
-  apagarcilindroc();
+  apagarbanda1();
   pesarcarga();
 }
 
@@ -153,7 +157,7 @@ digitalWrite(pin2motorcilindroa1,LOW);
 //Funciones de control de las cintas transportadoras
 
 void arrancarbanda1(){
-digitalWrite(pinvelocidad,0);  
+digitalWrite(pinvelocidad,70);  
 digitalWrite(pin1motorcinta1,LOW); 
 digitalWrite(pin2motorcinta1,HIGH);
 }

@@ -1,0 +1,25 @@
+
+led_estado_1 = estado_1.lectura(VALOR_1);//LED QUE RECOGE EL ESTADO DEL SENSOR
+led_estado_2 = estado_2.lectura(VALOR_2);//LED QUE RECOGE EL ESTADO DEL SENSOR
+led_estado_3 = estado_3.lectura(VALOR_3);//LED QUE RECOGE EL ESTADO DEL SENSOR
+Serial.print(led_estado_1);
+Serial.print("  ");
+Serial.print(led_estado_2);
+Serial.print("  ");
+Serial.println(led_estado_3);
+
+if((led_estado_1 == 0)&&(led_estado_2 == 1)&&(led_estado_3 == 1))
+{
+  extraercilindroc();
+}
+else if/(led_estado_2 == 0)&&(led_estado_3 == 1))
+{
+  apagarcilindroc();
+  delay (5000);
+  extraercilindroc();
+  if (led_estado_3 == 0){
+    apagarcilindroc();
+  }
+  
+
+}
