@@ -18,15 +18,15 @@ infrarrojo estado_3(40);                 //S3 (sensor inferior de asensor)
 const int pin1motorcinta1=22;           //MOTOR 1
 const int pin2motorcinta1=23;           //MOTOR 1
 
-const int pin1motorcinta2=24;           //MOTOR 2
-const int pin2motorcinta2=25;           //MOTOR 2
+const int pin1motorcinta2=26;           //MOTOR 2  ------>BANDAS 2 PISO
+const int pin2motorcinta2=27;           //MOTOR 2  ------>BANDAS 2 PISO
 
-const int pin1motorcinta3=26;           //MOTOR 3
-const int pin2motorcinta3=27;           //MOTOR 3 
+const int pin1motorcinta3=24;           //MOTOR 3  ------>BANDAS 2 PISO
+const int pin2motorcinta3=25;           //MOTOR 3  ------>BANDAS 2 PISO
 
 //Pines de control de cilindros
-const int pin1motorcilindroc=10;        //MOTOR 4
-const int pin2motorcilindroc=11;        //MOTOR 4
+const int pin1motorcilindroc=28;        //MOTOR 4
+const int pin2motorcilindroc=29;        //MOTOR 4
 
 const int pin1motorcilindroa1=28;
 const int pin2motorcilindroa1=29;
@@ -89,7 +89,9 @@ led_estado_3 = estado_3.lectura(VALOR_3);//LED QUE RECOGE EL ESTADO DEL SENSOR
 
 if(led_estado_1 == 0)
 {
-  arrancarbanda1();
+ // arrancarbanda1();
+  arrancarbanda2();
+  arrancarbanda3();
   lcd.setCursor(0,0);
   lcd.print("     MOTOR 1    " );
   lcd.setCursor(0,1);
@@ -98,13 +100,25 @@ if(led_estado_1 == 0)
 if(led_estado_2 == 1)
 {
   apagarbanda1();
+  apagarbanda2();
+  apagarbanda3();
   pesarcarga();
+  
 }
 
 if(led_estado_3 == 0)
 {
-  extraercilindroa();
-  extraercilindrob();
+  //extraercilindroa();
+  //extraercilindrob();
+  extraercilindroc();
+  delay(500);
+  apagarcilindroc();
+  delay(500);
+  retraercilindroc();
+  delay(500);
+  apagarcilindroc();
+  
+  
 }
 
   
@@ -166,7 +180,7 @@ digitalWrite(pin1motorcilindroa1,LOW);
 digitalWrite(pin2motorcilindroa1,LOW);
 }
  
-//BANDAS
+//---------------------BANDAS-----------------------
 
 void arrancarbanda1(){
 digitalWrite(pinvelocidad,70);  
@@ -180,7 +194,7 @@ digitalWrite(pin2motorcilindroa1,LOW);
 }
 
 void arrancarbanda2(){
-digitalWrite(pinvelocidad,70);  
+digitalWrite(pinvelocidad,30);  
 digitalWrite(pin1motorcinta2,LOW); 
 digitalWrite(pin2motorcinta2,HIGH);
 }
