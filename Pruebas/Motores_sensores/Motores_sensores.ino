@@ -15,11 +15,11 @@ infrarrojo estado_2(42);                 //S2 (sensor de paro para medir peso)
 infrarrojo estado_3(40);                 //S3 (sensor inferior de asensor)
 
 const int inputPin = 50;                 //FINAL DE CARRERA
-int value = 0;
+int valuefinal_carrera = 0;
 
 //Pines de control de las cintas transportadoras
 const int pin1motorcinta1=22;           //MOTOR 1
-const int pin2motorcinta1=23;           //MOTOR 1
+const int pin2motorcinta1=23;           //MOTOR 1  
 
 const int pin1motorcinta2=26;           //MOTOR 2  ------>BANDAS 2 PISO
 const int pin2motorcinta2=27;           //MOTOR 2  ------>BANDAS 2 PISO
@@ -80,10 +80,62 @@ void setup() {
 }
 
 void loop() {
+if(led_estado_1 == 0)
+{
+  arrancarbanda1();
+  if(led_estado_2 == 0)
+    {
+    apagarbanda1();
+    delay(8000);
+                           //FGUNCION DE PESAR
+    if(pesarcarga()<10)
+    {
+      arrancarbanda1();
+      if (led_estado_3 == 0)
+      {
+        apagarbanda1();
+        extraercilindroc();
+        if (valuefinal_carrera == HIGH) 
+        {
+          apagarcilindroc();
+          arrancarbanda2();
+          extraercilindroa();
+          delay(10000);
+          apagarbanda2();
+          retraercilindroc();
+        }
+      }
+    }
+    else
+    {
+      arrancarbanda1();
+      if (led_estado_3 == 0)
+      {
+        apagarbanda1();
+        extraercilindroc();
+        if (valuefinal_carrera == HIGH) 
+        {
+          apagarcilindroc();
+          arrancarbanda3();
+          extraercilindrob();
+          delay(10000);
+          apagarbanda3();
+          retraercilindroc();
+        }
+      }      
+    }
+    arrancarbanda1();
+    }
+  else
+    {
+    apagarbanda1();
+    }
+}
 
-  
 
-value = digitalRead(inputPin);  
+
+/*------------------------------------------FINAL DE CARRERA------------------------------
+ * value = digitalRead(inputPin);  
   if (value == HIGH) {
     extraercilindroc();
     Serial.println("Encendido");
@@ -92,7 +144,8 @@ value = digitalRead(inputPin);
     apagarcilindroc();
     Serial.println("Apagado");
  }
-
+ ------------------------------------------FINAL DE CARRERA-------------------------------
+*/
 
 /*
 led_estado_1 = estado_1.lectura(VALOR_1);//LED QUE RECOGE EL ESTADO DEL SENSOR
@@ -137,13 +190,14 @@ if(led_estado_3 == 0)
   
 }
 //FUNCIÓN PESAR 
-void pesarcarga(){
+int pesarcarga(){
   LoadCell.update(); // retrieves data from the load cell
   float i = LoadCell.getData(); // get output value
   lcd.setCursor(0, 0); // set cursor to first row
   lcd.print("Weight[g]:"); // print out to LCD
   lcd.setCursor(0, 1); // set cursor to secon row
   lcd.print(i); // print out the retrieved value to the second row
+  return i;
   }
 
 //Funciones cilindros A Y B CON LOS DOS SERVOS
