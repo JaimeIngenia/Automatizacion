@@ -29,8 +29,8 @@ const int pinfcfcilindroa=23;
 const int pinfcicilindrob=24;
 const int pinfcfcilindrob=25;
 
-const int pinfcicilindroc=26;
-const int pinfcfcilindroc=27;
+const int pinfcicilindroc=28;
+const int pinfcfcilindroc=29;
 
 //Pines de lectura de finales de carrera de las cintas transportadoras
 const int pinfcicinta0=28;

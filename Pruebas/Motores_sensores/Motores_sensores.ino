@@ -14,6 +14,9 @@ infrarrojo estado_1(41);                 //S1 (sensor de arranque banda 1)
 infrarrojo estado_2(42);                 //S2 (sensor de paro para medir peso)
 infrarrojo estado_3(40);                 //S3 (sensor inferior de asensor)
 
+const int inputPin = 50;                 //FINAL DE CARRERA
+int value = 0;
+
 //Pines de control de las cintas transportadoras
 const int pin1motorcinta1=22;           //MOTOR 1
 const int pin2motorcinta1=23;           //MOTOR 1
@@ -28,8 +31,8 @@ const int pin2motorcinta3=25;           //MOTOR 3  ------>BANDAS 2 PISO
 const int pin1motorcilindroc=28;        //MOTOR 4
 const int pin2motorcilindroc=29;        //MOTOR 4
 
-const int pin1motorcilindroa1=28;
-const int pin2motorcilindroa1=29;
+const int pin1motorcilindroa1=30;
+const int pin2motorcilindroa1=31;
 //pin de velocidad de los pwm
 const int pinvelocidad=12;
 
@@ -73,19 +76,29 @@ void setup() {
   pinMode(pin2motorcilindroc, OUTPUT); //MOTOR 4
   
   digitalWrite(pinvelocidad,0);
+    pinMode(inputPin, INPUT);          //PIN FINAL DE CARRERA
 }
 
 void loop() {
 
+  
 
+value = digitalRead(inputPin);  
+  if (value == HIGH) {
+    extraercilindroc();
+    Serial.println("Encendido");
+  }
+  else {
+    apagarcilindroc();
+    Serial.println("Apagado");
+ }
+
+
+/*
 led_estado_1 = estado_1.lectura(VALOR_1);//LED QUE RECOGE EL ESTADO DEL SENSOR
 led_estado_2 = estado_2.lectura(VALOR_2);//LED QUE RECOGE EL ESTADO DEL SENSOR
 led_estado_3 = estado_3.lectura(VALOR_3);//LED QUE RECOGE EL ESTADO DEL SENSOR
-//Serial.print(led_estado_1);
-//Serial.print("  ");
-//Serial.print(led_estado_2);
-//Serial.print("  ");
-//Serial.println(led_estado_3);
+
 
 if(led_estado_1 == 0)
 {
@@ -120,7 +133,7 @@ if(led_estado_3 == 0)
   
   
 }
-
+*/
   
 }
 //FUNCIÓN PESAR 
@@ -158,7 +171,7 @@ myservo2.write(5);              // 0 tells the continuous rotation servo (CRS) t
 delay(800);                       // waits X ms for the servo to reach the original position
 myservo2.write(180);
 }
-//cilindro c
+//---------------------CILINDRO C-----------------------
 
 void extraercilindroc(){
 digitalWrite(pinvelocidad,70);  
@@ -214,7 +227,18 @@ digitalWrite(pinvelocidad,0);
 digitalWrite(pin1motorcilindroa1,LOW); 
 digitalWrite(pin2motorcilindroa1,LOW);
 }
+//---------------------FINAL DE CARRERA-----------------------
 
+void finaldecarrera(){
+  /*value = digitalRead(inputPin);  
+  if (value == HIGH) {
+      Serial.println("Encendido");
+  }
+  else {
+      Serial.println("Apagado");
+  }
+  delay(1000);*/
+}
 
 //FUINCIÓN APAGAR SANTI 
 void apagarcilindroa(){
