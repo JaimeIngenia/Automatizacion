@@ -49,7 +49,7 @@ void setup() {
 
   LoadCell.begin();                     //BALANZA
   LoadCell.start(2000);                 //BALANZA
-  LoadCell.setCalFactor(-300.0);        //BALANZA
+  LoadCell.setCalFactor(340.0);         //BALANZA
   
   myservo.attach(36);                   //SERVOS 1 
   myservo2.attach(34);                  //SERVOS 2 
@@ -80,7 +80,6 @@ void setup() {
 }
 
 void loop() {
-  /*
 if(led_estado_1 == 0)
 {
   arrancarbanda1();
@@ -132,12 +131,12 @@ if(led_estado_1 == 0)
     apagarbanda1();
     }
 }
-*/
 
 
-//------------------------------------------FINAL DE CARRERA------------------------------
-  valuefinal_carrera = digitalRead(inputPin);  
-  if (valuefinal_carrera == HIGH) {
+
+/*------------------------------------------FINAL DE CARRERA------------------------------
+ * value = digitalRead(inputPin);  
+  if (value == HIGH) {
     extraercilindroc();
     Serial.println("Encendido");
   }
@@ -145,15 +144,13 @@ if(led_estado_1 == 0)
     apagarcilindroc();
     Serial.println("Apagado");
  }
-// ------------------------------------------FINAL DE CARRERA-------------------------------
-
+ ------------------------------------------FINAL DE CARRERA-------------------------------
+*/
 
 /*
 led_estado_1 = estado_1.lectura(VALOR_1);//LED QUE RECOGE EL ESTADO DEL SENSOR
 led_estado_2 = estado_2.lectura(VALOR_2);//LED QUE RECOGE EL ESTADO DEL SENSOR
 led_estado_3 = estado_3.lectura(VALOR_3);//LED QUE RECOGE EL ESTADO DEL SENSOR
-
-
 if(led_estado_1 == 0)
 {
  // arrancarbanda1();
@@ -172,7 +169,6 @@ if(led_estado_2 == 1)
   pesarcarga();
   
 }
-
 if(led_estado_3 == 0)
 {
   //extraercilindroa();
