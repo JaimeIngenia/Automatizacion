@@ -1,0 +1,34 @@
+
+BOTÓN CON AUTOSOSTENIMIENTO Y PULLDOWN
+SE PRENDE O APAGA DISPOSITIVO CON EL MISMO BOTÓN
+
+int estado = 0;  //Guarda estado del botón
+int estadoAnterior = 0;  //Guarda estado anterior del botón (para que se lea bien pulso)
+int salida = 0;  //Guarda estado del Led
+
+void setup() {
+  
+   pinMode (9, INPUT);
+   pinMode (10, OUTPUT);
+
+}
+
+void loop() {
+
+  estado = digitalRead(9);
+  if((estado == HIGH) && (estadoAnterior == LOW)) {
+    salida = 1 - salida;   //Modifica el estado de la variable salida
+    delay (20);            //Evitar el rebote del pulsador
+  }
+
+  estadoAnterior = estado;  //Guarda el valor actual 
+ //-------los siguientes condicionales son si usted quiere que el 
+         //mismo pulsador prenda y apague
+
+  if (salida == 1){
+    digitalWrite(10, HIGH);
+  }
+  else {
+    digitalWrite(10, LOW);
+  }
+}
