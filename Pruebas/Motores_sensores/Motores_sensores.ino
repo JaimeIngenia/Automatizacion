@@ -1,3 +1,5 @@
+#define PIN_START  48                    // PULSADOR START
+
 #include <HX711_ADC.h>                   //BALANZA
 HX711_ADC LoadCell(6, 7);                //BLANZA
 
@@ -13,6 +15,12 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);      //PANTALLA
 infrarrojo estado_1(41);                 //S1 (sensor de arranque banda 1)
 infrarrojo estado_2(42);                 //S2 (sensor de paro para medir peso)
 infrarrojo estado_3(40);                 //S3 (sensor inferior de asensor)
+
+int estado_apagado = 0;                 //START
+int estadoAnterior_apagado = 0;         //START
+int estado = 0;                         //START
+int estadoAnterior = 0;                 //START
+int salida = 0;                         //START
 
 const int inputPin = 50;                 //FINAL DE CARRERA
 int valuefinal_carrera = 0;
@@ -46,6 +54,7 @@ int led_estado_2;                        // Variable de estado de sensor de paro
 int led_estado_3;                        // Variable de estado inferior de sensor de asensor
 
 void setup() {
+  pinMode(PIN_START, INPUT_PULLUP);     //PULSADOR START
 
   LoadCell.begin();                     //BALANZA
   LoadCell.start(2000);                 //BALANZA
@@ -76,11 +85,13 @@ void setup() {
   pinMode(pin2motorcilindroc, OUTPUT); //MOTOR 4
   
   digitalWrite(pinvelocidad,0);
-    pinMode(inputPin, INPUT);          //PIN FINAL DE CARRERA
+  pinMode(inputPin, INPUT);          //PIN FINAL DE CARRERA
 }
 
 void loop() {
-  /*
+  arrancar(); 
+while (salida != 0)
+{  
 if(led_estado_1 == 0)
 {
   arrancarbanda1();
@@ -132,19 +143,48 @@ if(led_estado_1 == 0)
     apagarbanda1();
     }
 }
-*/
-
-
-//------------------------------------------FINAL DE CARRERA------------------------------
+}
+/*  arrancar(); 
+  while (salida != 0)
+  {
   valuefinal_carrera = digitalRead(inputPin);  
   if (valuefinal_carrera == HIGH) {
-    extraercilindroc();
-    Serial.println("Encendido");
+    arrancarbanda1();
+    
+  }
+  else {
+    apagarbanda1();
+    delay(8000);
+
+ 
+       }
+  }
+*/
+//------------------------------------------FINAL DE CARRERA CILINDRO C------------------------------
+/*  arrancar(); 
+  while (salida != 0)
+  {
+  valuefinal_carrera = digitalRead(inputPin);  
+  if (valuefinal_carrera == HIGH) {
+//    extraercilindrob();  
+//    extraercilindroa();
+//    arrancarbanda3();
+//    arrancarbanda2();
+//    arrancarbanda1();
+//    extraercilindroc();
+    
   }
   else {
     apagarcilindroc();
-    Serial.println("Apagado");
- }
+    delay(8000);
+    retraercilindroc();
+    delay(570);
+    apagarcilindroc();
+    delay(8000);
+    
+       }
+  }
+ */
 // ------------------------------------------FINAL DE CARRERA-------------------------------
 
 
@@ -208,9 +248,10 @@ myservo.write(180);              // 180 tells the continuous rotation servo (CRS
 delay(800);                       // waits X ms for the servo to reach the desired position
 myservo.write(90);              // 90 tells the CRS to stop (use potentiometer on servo to tune to full stop if there is jitter)
 delay(500);                     // Arbitrary wait time before moving actuator backward
-myservo.write(5);              // 0 tells the continuous rotation servo (CRS) to move backward
+myservo.write(0);              // 0 tells the continuous rotation servo (CRS) to move backward
 delay(800);                       // waits X ms for the servo to reach the original position
 myservo.write(90);
+while(1){}
 lcd.setCursor(0,0);
 lcd.print("    CILIINDRO A    " );
 lcd.setCursor(0,1);
@@ -225,11 +266,12 @@ delay(500);                     // Arbitrary wait time before moving actuator ba
 myservo2.write(5);              // 0 tells the continuous rotation servo (CRS) to move backward
 delay(800);                       // waits X ms for the servo to reach the original position
 myservo2.write(180);
+while(1){}
 }
 //---------------------CILINDRO C-----------------------
 
 void extraercilindroc(){
-digitalWrite(pinvelocidad,70);  
+digitalWrite(pinvelocidad,50);  
 digitalWrite(pin1motorcilindroc,HIGH); 
 digitalWrite(pin2motorcilindroc,LOW);
 lcd.setCursor(0,0);
@@ -252,8 +294,8 @@ digitalWrite(pin2motorcilindroa1,LOW);
 
 void arrancarbanda1(){
 digitalWrite(pinvelocidad,70);  
-digitalWrite(pin1motorcinta1,LOW); 
-digitalWrite(pin2motorcinta1,HIGH);
+digitalWrite(pin1motorcinta1,HIGH); 
+digitalWrite(pin2motorcinta1,LOW);
 }
 void apagarbanda1(){
 digitalWrite(pinvelocidad,0);  
@@ -263,8 +305,8 @@ digitalWrite(pin2motorcilindroa1,LOW);
 
 void arrancarbanda2(){
 digitalWrite(pinvelocidad,30);  
-digitalWrite(pin1motorcinta2,LOW); 
-digitalWrite(pin2motorcinta2,HIGH);
+digitalWrite(pin1motorcinta2,HIGH); 
+digitalWrite(pin2motorcinta2,LOW);
 }
 void apagarbanda2(){
 digitalWrite(pinvelocidad,0);  
@@ -274,8 +316,8 @@ digitalWrite(pin2motorcilindroa1,LOW);
 
 void arrancarbanda3(){
 digitalWrite(pinvelocidad,70);  
-digitalWrite(pin1motorcinta3,LOW); 
-digitalWrite(pin2motorcinta3,HIGH);
+digitalWrite(pin1motorcinta3,HIGH); 
+digitalWrite(pin2motorcinta3,LOW);
 }
 void apagarbanda3(){
 digitalWrite(pinvelocidad,0);  
@@ -299,3 +341,16 @@ void finaldecarrera(){
 void apagarcilindroa(){
 digitalWrite(pin1motorcilindroa1,LOW); 
 digitalWrite(pin2motorcilindroa1,LOW);}
+
+//FUNCIÓN PULSADOR SOSTENIDO START
+void arrancar()
+{
+  estado = digitalRead(PIN_START);
+  if((estado == HIGH)&&(estadoAnterior == LOW))
+  {
+    salida = 1;
+    delay (20);            
+  }
+
+  estadoAnterior = estado;  
+}
