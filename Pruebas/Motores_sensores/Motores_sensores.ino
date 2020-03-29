@@ -89,20 +89,61 @@ void setup() {
 }
 
 void loop() {
-  arrancar(); 
+led_estado_1 = estado_1.lectura(VALOR_1);//LED QUE RECOGE EL ESTADO DEL SENSOR
+led_estado_2 = estado_2.lectura(VALOR_2);//LED QUE RECOGE EL ESTADO DEL SENSOR
+led_estado_3 = estado_3.lectura(VALOR_3);//LED QUE RECOGE EL ESTADO DEL SENSOR
+
+//________________________PROGRAMACIÓN PAPA___________________________
+
+
+
+arrancar(); 
+if (salida == 0) Serial.println("Apagado"); 
 while (salida != 0)
 {  
+if (salida != 0) Serial.println("Encendido"); 
+led_estado_1 = estado_1.lectura(VALOR_1);  
+if (led_estado_1 != 0) Serial.println("Banda 1 apagada"); 
+while(led_estado_1 == 0)
+{
+  led_estado_1 = estado_1.lectura(VALOR_1);  
+  if (led_estado_1 == 0) Serial.println("Banda 1 encedida"); 
+  //arrancarbanda2();
+  led_estado_2 = estado_2.lectura(VALOR_2);  
+     if(led_estado_2 == 0)
+    {
+      if (led_estado_2 == 0) Serial.println("_____Banda 2 encedida - Banda 1 apagada"); 
+    //apagarbanda2();
+    //delay(8000);
+    }
+
+  
+}
+
+}
+
+/*
+arrancar(); 
+if (salida == 0) Serial.println("Apagado"); 
+while (salida != 0)
+{  
+if (salida != 0) Serial.println("Encendido"); 
+led_estado_1 = estado_1.lectura(VALOR_1);  
+if (led_estado_1 != 0) Serial.println("Banda 1 apagada"); 
 if(led_estado_1 == 0)
 {
+  if (led_estado_1 == 0) Serial.println("Banda 1 encedido"); 
   arrancarbanda1();
+  led_estado_2 = estado_2.lectura(VALOR_2);  
   if(led_estado_2 == 0)
     {
     apagarbanda1();
     delay(8000);
                            //FGUNCION DE PESAR
-    if(pesarcarga()<10)
+    if(pesarcarga()<5)
     {
       arrancarbanda1();
+      led_estado_3 = estado_3.lectura(VALOR_3);  
       if (led_estado_3 == 0)
       {
         apagarbanda1();
@@ -121,6 +162,7 @@ if(led_estado_1 == 0)
     else
     {
       arrancarbanda1();
+      led_estado_3 = estado_3.lectura(VALOR_3);
       if (led_estado_3 == 0)
       {
         apagarbanda1();
@@ -144,6 +186,10 @@ if(led_estado_1 == 0)
     }
 }
 }
+*/
+//________________________PROGRAMACIÓN PAPA___________________________
+///////////////////////////PROGRAMACIÓN PRUEBA////////////////////////
+
 /*  arrancar(); 
   while (salida != 0)
   {
@@ -160,6 +206,8 @@ if(led_estado_1 == 0)
        }
   }
 */
+////////////////////////PROGRAMACIÓN PRUEBA/////////////////////////
+
 //------------------------------------------FINAL DE CARRERA CILINDRO C------------------------------
 /*  arrancar(); 
   while (salida != 0)
@@ -171,7 +219,7 @@ if(led_estado_1 == 0)
 //    arrancarbanda3();
 //    arrancarbanda2();
 //    arrancarbanda1();
-//    extraercilindroc();
+      extraercilindroc();
     
   }
   else {
@@ -263,7 +311,7 @@ myservo2.write(180);              // 180 tells the continuous rotation servo (CR
 delay(800);                       // waits X ms for the servo to reach the desired position
 myservo2.write(180);              // 90 tells the CRS to stop (use potentiometer on servo to tune to full stop if there is jitter)
 delay(500);                     // Arbitrary wait time before moving actuator backward
-myservo2.write(5);              // 0 tells the continuous rotation servo (CRS) to move backward
+myservo2.write(0);              // 0 tells the continuous rotation servo (CRS) to move backward
 delay(800);                       // waits X ms for the servo to reach the original position
 myservo2.write(180);
 while(1){}
@@ -293,7 +341,7 @@ digitalWrite(pin2motorcilindroa1,LOW);
 //---------------------BANDAS-----------------------
 
 void arrancarbanda1(){
-digitalWrite(pinvelocidad,70);  
+digitalWrite(pinvelocidad,60);  
 digitalWrite(pin1motorcinta1,HIGH); 
 digitalWrite(pin2motorcinta1,LOW);
 }

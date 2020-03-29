@@ -1,0 +1,297 @@
+#include <Servo.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <SPI.h>
+#include <MFRC522.h>
+
+//Macros
+#define PIN_SERVO      5
+#define PIN_BUZZER     4
+#define PIN_LED        3
+#define PIN_POT        A0
+#define PIN_FOTO       A1
+#define PIN_BOTON_A    8
+#define PIN_BOTON_B    7
+#define PIN_BOTON_C    6
+#define RST_PIN        9    //Pin 9 para el reset del RC522
+#define SS_PIN         10   //Pin 10 para Arduino uno y Pin 53 para Arduino Mega.para el SS (SDA) del RC522
+
+#define ANGULO_ABIERTO  90
+#define ANGULO_CERRADO  179
+#define TALANQUERA_ABRIR  talanquera.write(ANGULO_ABIERTO)
+#define TALANQUERA_CERRAR talanquera.write(ANGULO_CERRADO)
+#define SENSOR_MAX      680
+#define SENSOR_MIN      10
+#define SENSOR_UMBRAL   SENSOR_MIN + ((SENSOR_MAX - SENSOR_MIN)/2)
+#define BUZZER_BEEP     digitalWrite(PIN_BUZZER, HIGH); delay(100); digitalWrite(PIN_BUZZER, LOW); delay(400)
+#define BUZZER_BOTON     digitalWrite(PIN_BUZZER, HIGH); delay(40); digitalWrite(PIN_BUZZER, LOW); delay(100)
+#define LED_ABIERTO digitalWrite (PIN_LED, HIGH)
+#define LED_CERRADO digitalWrite (PIN_LED, LOW)
+#define IS_PRESSED 0
+//Objetos
+Servo talanquera;  // create servo object to control a servo
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+MFRC522 mfrc522(SS_PIN, RST_PIN); //Creamos el objeto para el RC522
+
+//Maquina de estados
+enum estados {
+  EST_IDLE,
+  EST_ESP_CARRO,
+  EST_ESP_TAR,
+  EST_ESP_DET,
+  EST_ESP_PASO,
+  EST_REGISTRO,
+  EST_CERRADO
+};
+enum estado_boton {
+  NINGUN_BOTON,
+  BOTON_A_PRESSED,
+  BOTON_B_PRESSED,
+  BOTON_C_PRESSED
+
+};
+int estado_actual = EST_ESP_CARRO;
+int estado_anterior = EST_IDLE;
+unsigned int numero_carros = 0;
+String clave = " 251 158 31 163";
+void setup() {
+  Serial.begin(9600);
+  Serial.println("1- Configurando puerto serial...");
+  Serial.println("2- Configurando lector de tarjetas...");
+  SPI.begin();                              //Iniciamos el Bus SPI
+  mfrc522.PCD_Init();                       // Iniciamos  el MFRC522
+  Serial.println("3- Configurando talanquera...");
+  talanquera.attach(PIN_SERVO);  // Inicializamos el objeto del servomotor
+  Serial.println("4- Configurando display LCD...");
+  lcd.begin();                              // Inicializamos el objeto de la pantalla
+  lcd.backlight();                          // Prendemos la pantalla
+  lcd.print("  Bienvenido   ");             // Mensaje de bienvenida
+  Serial.println("5- Configurando los botones...");
+  pinMode(PIN_BOTON_A, INPUT_PULLUP);
+  pinMode(PIN_BOTON_B, INPUT_PULLUP);
+  pinMode(PIN_BOTON_C, INPUT_PULLUP);
+  Serial.println("6- Configurando buzzer...");
+  pinMode(PIN_BUZZER, OUTPUT);
+  Serial.println("7- Configurando led...");
+  pinMode(PIN_LED, OUTPUT);
+  for (int i = 0; i < 5; i++) {
+    BUZZER_BEEP; //Sonido visajoso de que esta configurado
+  }
+}
+void loop() {
+  switch (estado_actual) {
+    case EST_ESP_CARRO:
+      estado_esp_carro();
+      break;
+    case EST_ESP_TAR:
+      estado_esp_tarjeta();
+      break;
+    case EST_ESP_DET:
+      estado_esp_det();
+      break;
+    case EST_ESP_PASO:
+      estado_esp_paso();
+      break;
+    case EST_REGISTRO:
+      estado_registro();
+      break;
+    case EST_CERRADO:
+      estado_cerrado();
+      break;
+    default:
+      break;
+  }
+}
+void estado_esp_carro() {
+  if (estado_actual != estado_anterior)
+  {
+    estado_anterior = estado_actual;
+    //lo que hay aqui dentro se hara una sola vez,  cuando se entre a este estado
+    Serial.println("Estado actual : esp_carro");
+    lcd.setCursor(0, 0);
+    lcd.print("  Parqueadero   ");
+    lcd.setCursor(0, 1); lcd.print("             ");
+    lcd.setCursor(0, 1);
+    lcd.print(" Carros:  " + String(numero_carros));
+    LED_ABIERTO;
+    TALANQUERA_CERRAR;
+  }
+  //QUE ES LO QUE SE HACE EN ESTE ESTADO?
+  if (leer_boton() == BOTON_A_PRESSED)
+  {
+    estado_actual = EST_CERRADO;
+  }
+  if (leer_boton() == BOTON_C_PRESSED)
+  {
+    estado_actual = EST_ESP_TAR;
+  }
+
+
+
+}
+void estado_esp_tarjeta() {
+  if (estado_actual != estado_anterior)
+  {
+    estado_anterior = estado_actual;
+    //lo que hay aqui dentro se hara una sola vez,  cuando se entre a este estado
+    Serial.println("Estado actual : esp_tarjeta");
+    lcd.setCursor(0, 0);
+    lcd.print("    Esperando    ");
+    lcd.setCursor(0, 1);
+    lcd.print("  Tarjeta...  ");
+  }
+  //QUE SE HACE EN ESTE ESTADO?
+  // Revisamos si hay nuevas tarjetas  presentes
+  if ( mfrc522.PICC_IsNewCardPresent())
+  {
+    //Seleccionamos una tarjeta
+    if ( mfrc522.PICC_ReadCardSerial())
+    {
+      //Read uid from tag or card
+      String my_card_uid = readUID();
+      Serial.print("Card uid: ");
+      // Te
+      if (my_card_uid.equals(clave) == true)
+      {
+        TALANQUERA_ABRIR;
+        estado_actual = EST_ESP_DET;
+      }
+      else
+      {
+        Serial.println(my_card_uid);
+        estado_actual = EST_ESP_CARRO;
+      }
+      mfrc522.PICC_HaltA();
+    }
+  }
+
+}
+void estado_esp_det() {
+  if (estado_actual != estado_anterior)
+  {
+    estado_anterior = estado_actual;
+    //lo que hay aqui dentro se hara una sola vez,  cuando se entre a este estado
+    Serial.println("Estado actual : esp_deteccion");
+    lcd.setCursor(0, 0);
+    lcd.print("  TARJERA OK   ");
+
+    lcd.setCursor(0, 1);
+    lcd.print(" BIENVENIDOO  " );
+  }
+  //QUE SE HACE EN ESTE ESTADO
+  unsigned long last_millis = millis ();
+  while (millis() - last_millis < 7000)
+  {
+    if (analogRead (PIN_FOTO) < SENSOR_UMBRAL)
+    {
+      BUZZER_BEEP;
+      estado_actual = EST_ESP_PASO;
+      return;
+    }
+  }
+
+//Si se sale del whikr
+estado_actual = EST_ESP_CARRO;
+TALANQUERA_CERRAR;
+}
+void estado_esp_paso() {
+  if (estado_actual != estado_anterior)
+  {
+    estado_anterior = estado_actual;
+    //lo que hay aqui dentro se hara una sola vez,  cuando se entre a este estado
+    Serial.println("Estado actual : esp_paso");
+    lcd.setCursor(0, 0);
+    lcd.print("  CONTINUE  ");
+    lcd.setCursor(0, 1);
+    lcd.print(" PORFAVOR ");
+  }
+  //QUE SE HACEEN ESTE ESTADO?
+  BUZZER_BEEP;
+  if(analogRead(PIN_FOTO)>SENSOR_UMBRAL)
+  {
+    //SI PASO EL CARRO
+    estado_actual = EST_REGISTRO;
+  }
+
+}
+void estado_registro() {
+  if (estado_actual != estado_anterior)
+  {
+    estado_anterior = estado_actual;
+    //lo que hay aqui dentro se hara una sola vez,  cuando se entre a este estado
+    Serial.println("Estado actual : esp_registro");
+    lcd.setCursor(0, 0);
+    lcd.print("  REGISTRANDO...  ");
+    lcd.setCursor(0, 1); lcd.print("            " ); // BORRAR FILA 2
+  }
+  //QUE SE HACE ?
+  numero_carros++;
+  BUZZER_BOTON;BUZZER_BOTON;BUZZER_BOTON;BUZZER_BOTON;BUZZER_BOTON;
+  estado_actual = EST_ESP_CARRO;
+
+}
+void estado_cerrado() {
+  if (estado_actual != estado_anterior)
+  {
+    estado_anterior = estado_actual;
+    //lo que hay aqui dentro se hara una sola vez,  cuando se entre a este estado
+    Serial.println("Estado actual : esp_cerrado");
+    lcd.setCursor(0, 0);
+    lcd.print("  Parqueadero   ");
+    lcd.setCursor(0, 1); lcd.print("             ");
+    lcd.setCursor(0, 1);
+    lcd.print(" CERRADO");
+    LED_CERRADO;
+  }
+//QUE HACEMOS EN ESTE ESTADO?
+if (leer_boton()== BOTON_A_PRESSED)
+{
+  estado_actual = EST_ESP_CARRO;
+  return;
+}
+if(leer_boton()==BOTON_B_PRESSED)
+{
+  BUZZER_BOTON;BUZZER_BOTON;BUZZER_BOTON;
+  numero_carros = 0;
+}
+if(leer_boton()==BOTON_C_PRESSED)
+{
+  lcd.noBacklight();
+  BUZZER_BEEP;
+  lcd.backlight();
+  
+}
+}
+String readUID() {
+  String uid = "";
+  // Enviamos serialemente su UID
+  for (byte i = 0; i < mfrc522.uid.size; i++) {
+    uid += (mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
+    uid += (mfrc522.uid.uidByte[i]);
+  }
+  return uid;
+}
+unsigned short leer_boton()
+{
+  boolean estado_boton = digitalRead (PIN_BOTON_A);
+  if (digitalRead (PIN_BOTON_A) == IS_PRESSED)
+  {
+    Serial.println("Boton A presionado");
+    BUZZER_BOTON;
+    return BOTON_A_PRESSED;
+  }
+  if (digitalRead (PIN_BOTON_B) == IS_PRESSED)
+  {
+    Serial.println("Boton B presionado");
+    BUZZER_BOTON;
+    return BOTON_B_PRESSED;
+  }
+  if (digitalRead (PIN_BOTON_C) == IS_PRESSED)
+  {
+    Serial.println("Boton C presionado");
+    BUZZER_BOTON;
+    return BOTON_C_PRESSED;
+  }
+  return NINGUN_BOTON;
+
+}
