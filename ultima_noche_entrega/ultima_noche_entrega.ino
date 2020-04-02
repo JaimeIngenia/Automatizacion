@@ -75,6 +75,8 @@ int led_estado_3;                        // Variable de estado inferior de senso
 
 void setup() {
 
+  pinMode(9, OUTPUT);
+
 pinMode(IN1,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA------------------------->
 pinMode(IN2,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA------------------------->
 
@@ -440,12 +442,15 @@ digitalWrite(IN2,LOW);
 }
 
 void extrae_objeto_b2(){
-      MOTOR_2_FORWARD; //abrir BANDEJA
-      delay(500);
-      MOTOR_2_STOP; //ADELANTE
-      MOTOR_1_BACKWARD; //abrir BANDEJA
-      delay(500);
-      MOTOR_1_STOP; //ADELANTE
+  int k=1;
+  while(k<=50){
+  k=k+1;
+  digitalWrite(9, HIGH);
+  delayMicroseconds(0);
+  digitalWrite(9, LOW);
+  delayMicroseconds(3600);
+  delay (10);
+  }
 }
 
 void cerrar(float p)
