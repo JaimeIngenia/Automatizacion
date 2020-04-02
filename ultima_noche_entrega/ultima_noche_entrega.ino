@@ -1,3 +1,8 @@
+int IN1 =2;                           //CILINDROS-ULTIMA PRUEBA------------------------->
+int IN2 =4;                           //CILINDROS-ULTIMA PRUEBA------------------------->
+int IN3 =8;                           //CILINDROS-ULTIMA PRUEBA------------------------->
+int IN4 =9;                           //CILINDROS-ULTIMA PRUEBA------------------------->
+
 #define PIN_MOTOR_1_EN 9
 #define PIN_MOTOR_1_N1 10
 #define PIN_MOTOR_1_N2 11
@@ -64,6 +69,12 @@ int led_estado_2;                        // Variable de estado de sensor de paro
 int led_estado_3;                        // Variable de estado inferior de sensor de asensor
 
 void setup() {
+
+pinMode(IN1,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA------------------------->
+pinMode(IN2,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA------------------------->
+pinMode(IN3,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA------------------------->
+pinMode(IN4,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA------------------------->
+  
   pinMode(PIN_MOTOR_1_EN, OUTPUT);
   pinMode(PIN_MOTOR_1_N1, OUTPUT);
   pinMode(PIN_MOTOR_1_N2, OUTPUT);
@@ -411,23 +422,32 @@ void activar_cinta3()
 }
 
 void extrae_objeto_b3(){
-myservo.write(180);              // 180 tells the continuous rotation servo (CRS) to move forward  
-delay(800);                       // waits X ms for the servo to reach the desired position
-myservo.write(90);              // 90 tells the CRS to stop (use potentiometer on servo to tune to full stop if there is jitter)
-delay(500);                     // Arbitrary wait time before moving actuator backward
-myservo.write(0);              // 0 tells the continuous rotation servo (CRS) to move backward
-delay(800);                       // waits X ms for the servo to reach the original position
-myservo.write(90);
+digitalWrite(IN1,HIGH);
+digitalWrite(IN2,LOW);
+delay(30);
+digitalWrite(IN1,LOW);
+digitalWrite(IN2,LOW);
+delay(2000);
+digitalWrite(IN1,LOW);
+digitalWrite(IN2,HIGH);
+delay(30);
+digitalWrite(IN1,LOW);
+digitalWrite(IN2,LOW);
+
 }
 
 void extrae_objeto_b2(){
-myservo2.write(180);              // 180 tells the continuous rotation servo (CRS) to move forward  
-delay(800);                       // waits X ms for the servo to reach the desired position
-myservo2.write(180);              // 90 tells the CRS to stop (use potentiometer on servo to tune to full stop if there is jitter)
-delay(500);                     // Arbitrary wait time before moving actuator backward
-myservo2.write(0);              // 0 tells the continuous rotation servo (CRS) to move backward
-delay(800);                       // waits X ms for the servo to reach the original position
-myservo2.write(180);
+digitalWrite(IN3,HIGH);
+digitalWrite(IN4,LOW);
+delay(60);
+digitalWrite(IN3,LOW);
+digitalWrite(IN4,LOW);
+delay(2000);
+digitalWrite(IN3,LOW);
+digitalWrite(IN4,HIGH);
+delay(60);
+digitalWrite(IN3,LOW);
+digitalWrite(IN4,LOW);
 }
 
 void cerrar(float p)
