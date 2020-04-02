@@ -1,40 +1,29 @@
 
-int servoPin=6;
 int h;
 
 void setup() {
 
-pinMode(servoPin, OUTPUT);
+  pinMode(9, OUTPUT);
 }
 
 void loop() {
-  horario();
-  antihorario(); 
+h=3600;
+mover();
+h=00;
+mover();
+
 }
 
-void horario() {
+void mover(){
   int k=1;
   while(k<=50){
   k=k+1;
-  digitalWrite(servoPin, HIGH);
-  delayMicroseconds(0);
-  digitalWrite(servoPin, LOW);
-  delayMicroseconds(3600);
+  digitalWrite(9, HIGH);
+  delayMicroseconds(h);
+  digitalWrite(9, LOW);
+  delayMicroseconds(3600-h);
   delay (10);
-
-}
- delay (3000);
-}
-void antihorario() {
-  int k=1;
-  while(k<=50){
-  k=k+1;
-  digitalWrite(servoPin, HIGH);
-  delayMicroseconds(3600);
-  digitalWrite(servoPin, LOW);
-  delayMicroseconds(0);
-  delay (10);
-
-}
- delay (3000);
-}
+    }
+  
+  }
+ 

@@ -1,7 +1,12 @@
-int IN1 =2;                           //CILINDROS-ULTIMA PRUEBA------------------------->
-int IN2 =4;                           //CILINDROS-ULTIMA PRUEBA------------------------->
-int IN3 =8;                           //CILINDROS-ULTIMA PRUEBA------------------------->
-int IN4 =9;                           //CILINDROS-ULTIMA PRUEBA------------------------->
+int IN1 =32;                           //CILINDROS-ULTIMA PRUEBA------------------------->
+int IN2 =33;                           //CILINDROS-ULTIMA PRUEBA------------------------->
+
+#define PIN_MOTOR_2_EN 34
+#define PIN_MOTOR_2_N3 35
+#define PIN_MOTOR_2_N4 36
+#define MOTOR_2_STOP digitalWrite(PIN_MOTOR_2_EN, LOW);digitalWrite(PIN_MOTOR_2_N3,LOW);digitalWrite(PIN_MOTOR_2_N4,LOW)
+#define MOTOR_2_FORWARD   digitalWrite(PIN_MOTOR_2_EN, HIGH);digitalWrite(PIN_MOTOR_2_N3,LOW);digitalWrite(PIN_MOTOR_2_N4,HIGH)
+#define MOTOR_2_BACKWARD   digitalWrite(PIN_MOTOR_2_EN, HIGH);digitalWrite(PIN_MOTOR_2_N3,HIGH);digitalWrite(PIN_MOTOR_1_N4,LOW)
 
 #define PIN_MOTOR_1_EN 9
 #define PIN_MOTOR_1_N1 10
@@ -72,9 +77,7 @@ void setup() {
 
 pinMode(IN1,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA------------------------->
 pinMode(IN2,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA------------------------->
-pinMode(IN3,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA------------------------->
-pinMode(IN4,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA------------------------->
-  
+
   pinMode(PIN_MOTOR_1_EN, OUTPUT);
   pinMode(PIN_MOTOR_1_N1, OUTPUT);
   pinMode(PIN_MOTOR_1_N2, OUTPUT);
@@ -437,17 +440,12 @@ digitalWrite(IN2,LOW);
 }
 
 void extrae_objeto_b2(){
-digitalWrite(IN3,HIGH);
-digitalWrite(IN4,LOW);
-delay(60);
-digitalWrite(IN3,LOW);
-digitalWrite(IN4,LOW);
-delay(2000);
-digitalWrite(IN3,LOW);
-digitalWrite(IN4,HIGH);
-delay(60);
-digitalWrite(IN3,LOW);
-digitalWrite(IN4,LOW);
+      MOTOR_2_FORWARD; //abrir BANDEJA
+      delay(500);
+      MOTOR_2_STOP; //ADELANTE
+      MOTOR_1_BACKWARD; //abrir BANDEJA
+      delay(500);
+      MOTOR_1_STOP; //ADELANTE
 }
 
 void cerrar(float p)
