@@ -1,6 +1,3 @@
-#define LED_ROJO 2                     //LED ROJO-->PESADO
-#define LED_AZUL 3                     //LED AZUL-->LIVIANO
-
 #define PIN_START  48                    // PULSADOR START
 
 #include <HX711_ADC.h>                   //BALANZA
@@ -57,9 +54,6 @@ int led_estado_2;                        // Variable de estado de sensor de paro
 int led_estado_3;                        // Variable de estado inferior de sensor de asensor
 
 void setup() {
-
-  pinMode(LED_ROJO, OUTPUT);            //LEDS
-  pinMode(LED_AZUL, OUTPUT);            //LEDS
   pinMode(PIN_START, INPUT_PULLUP);     //PULSADOR START
 
   LoadCell.begin();                     //BALANZA
@@ -114,6 +108,10 @@ int estado_actual = EST_ENCENDIDO;
 int estado_anterior = EST_APAGADO;
 float peso;
 int estado_peso=0;
+
+// CONTADORES
+int PESADOS = 0;                
+int LIVIANOS = 0;               
 
 void loop()
 {   
@@ -229,10 +227,10 @@ float detener_pesar_arrancar()
       i = LoadCell.getData(); // get output value
       estado_peso++;
     }
-    lcd.setCursor(0, 0); // set cursor to first row
-    lcd.print("Weight[g]:"); // print out to LCD
-    lcd.setCursor(0, 1); // set cursor to secon row
-    lcd.print(i); // print out the retrieved value to the second row
+//    lcd.setCursor(0, 0); // set cursor to first row
+//    lcd.print("Weight[g]:"); // print out to LCD
+//    lcd.setCursor(0, 1); // set cursor to secon row
+//    lcd.print(i); // print out the retrieved value to the second row
     digitalWrite(pinvelocidad,60);  
     digitalWrite(pin1motorcinta1,HIGH); 
     digitalWrite(pin2motorcinta1,LOW);
@@ -326,6 +324,7 @@ void activar_cinta2()
       delay(3000);
       digitalWrite(pin1motorcinta3,LOW); 
       digitalWrite(pin2motorcinta3,LOW);
+      LIVIANOS++;
       estado_actual = EST_BAJAR_ASC;
     }
 }
@@ -340,6 +339,7 @@ void activar_cinta3()
       delay(3000);
       digitalWrite(pin1motorcinta2,LOW); 
       digitalWrite(pin2motorcinta2,LOW);
+      PESADOS++;
       estado_actual = EST_BAJAR_ASC;
     }
 }

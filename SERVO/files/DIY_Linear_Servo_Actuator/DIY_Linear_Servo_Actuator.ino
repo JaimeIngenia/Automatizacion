@@ -17,7 +17,7 @@ Servo myservo;  // create servo object to control a servo
 void setup() {
     lcd.begin();                          //PANTALLA LCD
   lcd.backlight();                      //PANTALLA LCD
-  myservo.attach(36);  // attaches the servo on pin 10 to the servo object
+  myservo.attach(8);  // attaches the servo on pin 10 to the servo object
 }
 
 void loop() {
