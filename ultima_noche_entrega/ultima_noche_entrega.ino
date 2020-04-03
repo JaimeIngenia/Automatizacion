@@ -25,7 +25,9 @@ HX711_ADC LoadCell(6, 7);                //BLANZA
 
 #include <Servo.h>                       //SERVOS CILINDROS A & B
 Servo myservo;                          //SEVO_1 
-Servo myservo2;                         //SEVO_2                         
+Servo myservo2;                         //SEVO_2   
+int servoPin=4;                         //SERVO MODIFICADO
+int h;                      
 
 #include <Wire.h>                        //PANTALLA
 #include <LiquidCrystal_I2C.h>           //PANTALLA 
@@ -95,6 +97,7 @@ pinMode(IN2,OUTPUT);                    //CILINDROS-ULTIMA PRUEBA---------------
   myservo.attach(36);                   //SERVOS 1 
   myservo2.attach(34);                  //SERVOS 2 
   Serial.begin(9600);                   //SERVOS
+  pinMode(servoPin, OUTPUT);            //servo modificado
 
   lcd.begin();                          //PANTALLA LCD
   lcd.backlight();                      //PANTALLA LCD
@@ -442,16 +445,23 @@ digitalWrite(IN2,LOW);
 }
 
 void extrae_objeto_b2(){
+h=3600;
+mover();
+h=00;
+mover();
+delay (5000);
+}
+
+void mover(){
   int k=1;
   while(k<=50){
   k=k+1;
-  digitalWrite(36, HIGH);
-  delayMicroseconds(0);
-  digitalWrite(36, LOW);
-  delayMicroseconds(3600);
+  digitalWrite(servoPin, HIGH);
+  delayMicroseconds(h);
+  digitalWrite(servoPin, LOW);
+  delayMicroseconds(3600-h);
   delay (10);
-  }
-}
+    }
 
 void cerrar(float p)
 {
@@ -468,6 +478,7 @@ void cerrar(float p)
    estado_actual = EST_DETECCION;
   }
 }
+
 
 
 //FUNCIÓN PESAR 
